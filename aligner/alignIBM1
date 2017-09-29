@@ -1,0 +1,62 @@
+#!/usr/bin/env python
+import optparse
+import sys
+from collections import defaultdict
+import itertools
+
+optparser = optparse.OptionParser()
+optparser.add_option("-d", "--data", dest="train", default="data/hansards", help="Data filename prefix (default=data)")
+optparser.add_option("-e", "--english", dest="english", default="e", help="Suffix of English filename (default=e)")
+optparser.add_option("-f", "--french", dest="french", default="f", help="Suffix of French filename (default=f)")
+optparser.add_option("-t", "--threshold", dest="threshold", default=0.5, type="float", help="Threshold for aligning with Dice's coefficient (default=0.5)")
+optparser.add_option("-n", "--num_sentences", dest="num_sents", default=sys.maxint, type="int", help="Number of sentences to use for training and alignment")
+(opts, _) = optparser.parse_args()
+f_data = "%s.%s" % (opts.train, opts.french)
+e_data = "%s.%s" % (opts.train, opts.english)
+
+sys.stderr.write("\n")
+bitext = [[sentence.strip().split() for sentence in pair] for pair in zip(open(f_data), open(e_data))[:opts.num_sents]]
+
+iters = 0
+p = defaultdict(float)
+count = defaultdict(int)
+e_count = defaultdict(int)
+while iters < 200:
+	sys.stderr.write(str(iters))
+	count = defaultdict(int)
+	e_count = defaultdict(int)
+	
+	
+	
+	for (n, (f, e)) in enumerate(bitext):
+		for (i, f_i) in enumerate(set(f)):
+			z = 0
+			for (j, e_j) in enumerate(set(e)):
+				if p[(f_i, e_j)] == 0.0:
+					p[(f_i, e_j)] = 0.001
+				z += p[(f_i, e_j)]
+			for (j, e_j) in enumerate(set(e)):
+				c = p[(f_i, e_j)] / z
+				count[(f_i, e_j)] += c
+				e_count[e_j] += c
+		if n % 500 == 0:
+			sys.stderr.write(".")
+	
+	#p = defaultdict(float)
+	for (k, (f_i, e_j)) in enumerate(count.keys()):
+		p[(f_i,e_j)] = float(count[(f_i, e_j)]) / e_count[e_j]
+		if k % 15000 == 0:
+			sys.stderr.write(".")
+	sys.stderr.write("\n")
+	iters += 1
+
+for (n, (f, e)) in enumerate(bitext):
+		for (i, f_i) in enumerate(f):
+			bestp = 0
+			bestj = 0
+			for (j, e_j) in enumerate(e):
+				if p[(f_i, e_j)] > bestp:
+					bestp = p[(f_i, e_j)]
+					bestj = j
+			sys.stdout.write("%i-%i " % (i,bestj))
+		sys.stdout.write("\n")

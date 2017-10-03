@@ -26,10 +26,11 @@ for (n, (f, e)) in enumerate(bitext):
 	for (i, f_i) in enumerate(set(f)):
 		for (j, e_j) in enumerate(set(e)):
 			keys.add((f_i, e_j))
+maxiters = 50
 t = defaultdict(_constant_factory(1.0/len(keys)))#0.00001))
 q = defaultdict(_constant_factory(1.0/len(keys)))#0.00001))
 iters = 0
-while iters < 20:
+while iters < maxiters:
 	sys.stderr.write(str(iters))
 	count = defaultdict(float)
 	counte = defaultdict(float)
@@ -61,6 +62,8 @@ while iters < 20:
 	sys.stderr.write("\n")
 	
 	iters += 1
+	
+
 
 
 #Find best

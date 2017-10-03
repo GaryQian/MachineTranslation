@@ -7,6 +7,9 @@
 \title{Machine Translation HW2}
 \author{Gary Qian (gqian1)}
 \maketitle
+$\ $\\
+Code: https://github.com/GaryQian/MachineTranslation\\
+Commit: 54fd1dffc88838e17fab5f0c5601ef61211bcfb3
 
 \section{IBM Model 1}
 
@@ -65,7 +68,7 @@ Previously, all of the probability distributions were initialized uniformly, how
 
 After initialization, we continue to follow the EM algorithm, which is now starting at a state that is of AER 0.6 instead of a uniform distribution.
 
-\section{IBM Model 2}
+\section{Two way IBM Model 2}
 
 To improve upon the results of the previous improvements, I implemented IBM Model 2, which now takes into account the length of the sentence as well as the probability of the word pairs in combination with the lengths of the sentences. This should improve upon the results of IBM Model 1. I also integrated my diagonalization improvements since that is only applied at the end and was relatively simple to add.\\
 
@@ -88,6 +91,8 @@ t' = \frac{c(e,f)}{c(e)}
 q' = \frac{c(j|i,l,m)}{c(i,l,m)}
 \]
 
-My model 2 resulted in a AER improvement to 0.309
+My model 2 (single instance) resulted in a AER improvement to 0.301\\
+
+Building upon the results of my experimentation above, I also implemented a double IBM Model 2 system that trains 2 models, one f-e and the other e-f and combined them in a similar fashion as above. The results were improvements on the models alone and brought the AER even lower.
 
 \end{document}

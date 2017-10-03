@@ -21,7 +21,7 @@ iters = 0
 p = defaultdict(float)
 count = defaultdict(int)
 e_count = defaultdict(int)
-while iters < 200:
+while iters < 100:
 	sys.stderr.write(str(iters))
 	count = defaultdict(int)
 	e_count = defaultdict(int)

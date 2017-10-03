@@ -26,7 +26,7 @@ for (n, (f, e)) in enumerate(bitext):
 	for (i, f_i) in enumerate(set(f)):
 		for (j, e_j) in enumerate(set(e)):
 			keys.add((f_i, e_j))
-maxiters = 20
+maxiters = 15
 t = defaultdict(_constant_factory(1.0/len(keys)))#0.00001))
 q = defaultdict(_constant_factory(1.0/len(keys)))#0.00001))
 iters = 0

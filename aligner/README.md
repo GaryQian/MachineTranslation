@@ -12,6 +12,8 @@ Files:
 	
 	alignibm2: IBM Model 2 implementation with diagonal weighting
 	
+	alignibm2double: Double two-way f-e e-f IBM Model 2 implementation with diagonal weighting. Best performing algorithm.
+	
 These files are all python files and can be run with:
 
 	$ python <filename>

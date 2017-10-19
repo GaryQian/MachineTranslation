@@ -20,7 +20,6 @@ def replace(sent, source, trans_table):
 			new_sent = copy.deepcopy(sent)
 			new_sent[i] = greedyHyp(hyp.frindex, word.english)
 			possible.append(new_sent)
-	print possible
 	return possible
 
 
@@ -51,9 +50,7 @@ def splitSentence(sent, source, trans_table):
 	for index,hyp in enumerate(sent):
 		if hyp.frindex[1] - hyp.frindex[0] <2:
 			continue
-		print hyp.frindex
 		for mid in range(hyp.frindex[0]+1, hyp.frindex[1]):
-			print mid
 			phrase1 = (hyp.frindex[0], mid)
 			phrase2 = (mid, hyp.frindex[1])
 			try:

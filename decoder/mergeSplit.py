@@ -51,7 +51,9 @@ def splitSentence(sent, source, trans_table):
 	for index,hyp in enumerate(sent):
 		if hyp.frindex[1] - hyp.frindex[0] <2:
 			continue
+		print hyp.frindex
 		for mid in range(hyp.frindex[0]+1, hyp.frindex[1]):
+			print mid
 			phrase1 = (hyp.frindex[0], mid)
 			phrase2 = (mid, hyp.frindex[1])
 			try:
@@ -60,7 +62,7 @@ def splitSentence(sent, source, trans_table):
 			except KeyError:
 				continue
 			new_hyp1 = greedyHyp(phrase1, max(translations1, key=lambda phrase: phrase.logprob).english)
-			new_hyp2 = greedyHyp(phrase1, max(translations2, key=lambda phrase: phrase.logprob).english)
+			new_hyp2 = greedyHyp(phrase2, max(translations2, key=lambda phrase: phrase.logprob).english)
 			new_sent = copy.deepcopy(sent)
 			new_sent[index] = new_hyp1
 			new_sent.insert(index+1, new_hyp2)

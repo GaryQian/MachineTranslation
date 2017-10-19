@@ -13,6 +13,19 @@ def pharoahToGreedy(hypothesis):
 		return pharoahToGreedy(hypothesis.predecessor) + [greedyHyp(hypothesis.frindex, hypothesis.phrase.english)]
 
 
+def replace(sent, source, trans_table):
+	possible = []
+	for i, hyp in enumerate(sent):
+		for word in sorted(trans_table[source[hyp.frindex[0]:hyp.frindex[1]]], key=lambda p: p.logprob)[:10]:
+			new_sent = copy.deepcopy(sent)
+			new_sent[i] = greedyHyp(hyp.frindex, word.english)
+			possible.append(new_sent)
+	print possible
+	return possible
+
+
+
+
 def mergeSentence(sent, source, trans_table):
 	possible = []
 	french_phrases = sorted(sent, key=lambda hyp: hyp.frindex)

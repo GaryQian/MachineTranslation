@@ -22,7 +22,7 @@ tm = models.TM(opts.tm, opts.k)
 lm = models.LM(opts.lm)
 french = [tuple(line.strip().split()) for line in open(opts.input).readlines()[:opts.num_sents]]
 
-greedyHyp = namedtuple('greedyHyp', 'frindex, phrase')
+greedyHyp = namedtuple('greedyHyp', ('frindex, phrase'))
 
 # tm should translate unknown words as-is with probability 1
 for word in set(sum(french,())):
@@ -84,7 +84,7 @@ for f in french:
   current = pharoahToGreedy(winner)
   iters = 100
   while (iters > 0 or True):
-    s_current = score(current)
+    s_current = score(f, current, lm, tm, 1, 1, 1)
     s = s_current
     neighbors = []
     neighbors.append(swap(current))

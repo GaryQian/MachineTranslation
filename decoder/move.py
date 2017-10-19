@@ -4,7 +4,7 @@ def move(sentence=list):
 
     greedyH = []
 
-    frlist = sorted(sentence, lambda x : x.frIndex)
+    frlist = sorted(sentence, lambda x : x.frindex)
 
     for i in range(len(frlist) - 1):
 

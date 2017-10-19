@@ -1,12 +1,13 @@
 
 from collections import namedtuple
 
-greedyHyp = namedtuple("greedyHyp","frindex", "phrase")
+greedyHyp = namedtuple("greedyHyp",("frindex", "phrase"))
 
 
 def pharoahToGreedy(hypothesis):
 	if hypothesis.predecessor == None:
-		return [greedyHyp(hypothesis.frindex, hypothesis.phrase.english)]
+		return []
+		#return [greedyHyp(hypothesis.frindex, hypothesis.phrase.english)]
 	else:
 		return pharoahToGreedy(hypothesis.predecessor) + [greedyHyp(hypothesis.frindex, hypothesis.phrase.english)]
 

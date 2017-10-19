@@ -1,5 +1,4 @@
-import namedtuple
-from decodegreedy import greedyHyp
+from collections import namedtuple
 import copy
 
 def swap(sen):

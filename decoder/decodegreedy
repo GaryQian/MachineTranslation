@@ -3,7 +3,7 @@ import optparse
 import sys
 import models
 from collections import namedtuple
-from mergeSplit import pharoahToGreedy
+from mergeSplit import pharoahToGreedy, mergeSentence, splitSentence
 from swap import swap
 from move import move
 from score import score
@@ -83,12 +83,15 @@ for f in french:
   
   current = pharoahToGreedy(winner)
   iters = 100
-  while (iters > 0 || True):
+  while (iters > 0 or True):
     s_current = score(current)
     s = s_current
     neighbors = []
     neighbors.append(swap(current))
     neighbors.append(move(current))
+    neighbors.append(mergeSentence(current, f, tm))
+    neighbors.append(splitSentence(current, f, tm))
+
     best = current
     for h in neighbors:
       c = score(h)

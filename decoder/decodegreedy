@@ -84,27 +84,30 @@ for f in french:
   current = pharoahToGreedy(winner)
   iters = 100
   while (iters > 0 || True):
-	s_current = score(current)
-	s = s_current
-	neighbors = []
-	neighbors.append(swap(current))
-	neighbors.append(move(current))
-	best = current
-	for h in neighbors:
-		c = score(h)
-		if c > s:
-			s = c
-			best = h
-	if s == s_current:
-		break
-	else:
-		current = best
-  
-  
+    s_current = score(current)
+    s = s_current
+    neighbors = []
+    neighbors.append(swap(current))
+    neighbors.append(move(current))
+    best = current
+    for h in neighbors:
+      c = score(h)
+    if c > s:
+      s = c
+      best = h
+    if s == s_current:
+      break
+    else:
+      current = best
+  def extract_english_greedy(current):
+    s = ""
+  for h in current:
+      s += h.phrase
+    return s
   def extract_english(h): 
     return "" if h.predecessor is None else "%s%s " % (extract_english(h.predecessor), h.phrase.english)
   #print extract_english(winner)
-  print winner
+  print extract_english_greedy(current)
 
   if opts.verbose:
     def extract_tm_logprob(h):

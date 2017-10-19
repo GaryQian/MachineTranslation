@@ -83,7 +83,7 @@ for f in french:
   
   current = pharoahToGreedy(winner)
   iters = 100
-  while (iters > 0 || true):
+  while (iters > 0 || True):
 	s_current = score(current)
 	s = s_current
 	neighbors = []

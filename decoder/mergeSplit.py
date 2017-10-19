@@ -59,8 +59,8 @@ def splitSentence(sent, source, trans_table):
 				translations2 = trans_table[source[phrase2[0]: phrase2[1]]]
 			except KeyError:
 				continue
-			new_hyp1 = greedyHyp(phrase1, max(translations1, key=lambda phrase: abs(phrase.logprob)).english)
-			new_hyp2 = greedyHyp(phrase1, max(translations2, key=lambda phrase: abs(phrase.logprob)).english)
+			new_hyp1 = greedyHyp(phrase1, max(translations1, key=lambda phrase: phrase.logprob).english)
+			new_hyp2 = greedyHyp(phrase1, max(translations2, key=lambda phrase: phrase.logprob).english)
 			new_sent = copy.deepcopy(sent)
 			new_sent[index] = new_hyp1
 			new_sent.insert(index+1, new_hyp2)

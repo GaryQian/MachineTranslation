@@ -6,37 +6,7 @@ from collections import namedtuple
 from mergeSplit import pharoahToGreedy, mergeSentence, splitSentence
 from swap import swap
 from move import move
-
-
-def extract_english_greedy(current):
-  return " ".join([h.phrase for h in current])
-
-def score(src, sen, lm, tm, l1, l2, l3):
-
-  #calculate Lmprob
-    lm_state = lm.begin() # initial state is always <s>
-    lmprob = 0.0
-    for word in extract_english_greedy(sen):
-        (lm_state, word_logprob) = lm.score(lm_state, word)
-        lmprob += word_logprob
-    lmprob += lm.end(lm_state) # transition to </s>, can also use lm.score(lm_state, "</s>")[1]
-
-    #calculate tmProb
-
-    tmProb = 0.0
-
-    for gh in sen:
-        fphrase = tuple(src[gh.frindex[0]:gh.frindex[1]])
-        for t in tm[fphrase]:
-            if t.english == gh.phrase:
-                tmProb += t.logprob
-
-    prob = (l1*lmprob) + (l2*tmProb) - (l3* len(sen)) 
-
-
-
-
-
+from score import score
 
 optparser = optparse.OptionParser()
 optparser.add_option("-i", "--input", dest="input", default="data/input", help="File containing sentences to translate (default=data/input)")
@@ -117,14 +87,14 @@ for f in french:
     s_current = score(f, current, lm, tm, 1, 1, 1)
     s = s_current
     neighbors = []
-    neighbors += swap(current)
-    neighbors += move(current)
-    neighbors += mergeSentence(current, f, tm)
-    neighbors += splitSentence(current, f, tm)
+    neighbors.append(swap(current))
+    neighbors.append(move(current))
+    neighbors.append(mergeSentence(current, f, tm))
+    neighbors.append(splitSentence(current, f, tm))
 
     best = current
     for h in neighbors:
-      c = score(f,h,lm,tm,1,1,1)
+      c = score(h)
     if c > s:
       s = c
       best = h
@@ -133,6 +103,11 @@ for f in french:
     else:
       current = best
 
+  def extract_english_greedy(current):
+    s = ""
+    for h in current:
+      s += h.phrase
+    return s
   def extract_english(h): 
     return "" if h.predecessor is None else "%s%s " % (extract_english(h.predecessor), h.phrase.english)
   #print extract_english(winner)
@@ -144,4 +119,3 @@ for f in french:
     tm_logprob = extract_tm_logprob(winner)
     sys.stderr.write("LM = %f, TM = %f, Total = %f\n" % 
       (winner.logprob - tm_logprob, tm_logprob, winner.logprob))
-  

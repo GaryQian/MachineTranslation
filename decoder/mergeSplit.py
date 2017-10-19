@@ -35,7 +35,7 @@ def mergeSentence(sent, source, trans_table):
 			translations = trans_table[source[mergedPhrase[0]:mergedPhrase[1]]]
 		except KeyError:
 			continue
-		translation = max(translations, key=lambda phrase: abs(phrase.logprob)).english
+		translation = max(translations, key=lambda phrase: phrase.logprob).english
 		new_hyp = greedyHyp(mergedPhrase, translation)
 		new_sent1 = copy.deepcopy(sent)
 		new_sent1[index1] = new_hyp

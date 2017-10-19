@@ -9,6 +9,3 @@ def swap(sen):
     newsen[i], newsen[i+1] = newsen[i+1], newsen[i]
     out.append(newsen)
   return out
-      
-    
-

@@ -99,9 +99,10 @@ for f in french:
       break
     else:
       current = best
+
   def extract_english_greedy(current):
     s = ""
-  for h in current:
+    for h in current:
       s += h.phrase
     return s
   def extract_english(h): 

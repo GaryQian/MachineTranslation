@@ -13,28 +13,30 @@ def extract_english_greedy(current):
   return " ".join([h.phrase for h in current])
 
 def score(src, sen, lm, tm, l1, l2, l3):
-
-  #calculate Lmprob
-    lm_state = lm.begin() # initial state is always <s>
+    #calculate Lmprob
+    lm_state = lm.begin()
+    lm_logprob = 0.0
+    for word in extract_english_greedy(sen).split(" ") + ["</s>"]:
+      (lm_state, word_logprob) = lm.score(lm_state, word)
+      lm_logprob += word_logprob
+    
+    '''lm_state = lm.begin() # initial state is always <s>
     lmprob = 0.0
     for word in extract_english_greedy(sen):
         (lm_state, word_logprob) = lm.score(lm_state, word)
         lmprob += word_logprob
-    lmprob += lm.end(lm_state) # transition to </s>, can also use lm.score(lm_state, "</s>")[1]
-
+    lmprob += lm.end(lm_state) # transition to </s>, can also use lm.score(lm_state, "</s>")[1]'''
     #calculate tmProb
 
     tmProb = 0.0
-
     for gh in sen:
         fphrase = tuple(src[gh.frindex[0]:gh.frindex[1]])
         for t in tm[fphrase]:
             if t.english == gh.phrase:
                 tmProb += t.logprob
 
-    prob = (l1*lmprob) + (l2*tmProb) - (l3* len(sen)) 
+    prob = (l1*lm_logprob) + (l2*tmProb) - (l3* len(sen)) 
     return prob
-
 
 
 
@@ -61,7 +63,9 @@ for word in set(sum(french,())):
     tm[(word,)] = [models.phrase(word, 0.0)]
 
 sys.stderr.write("Decoding %s...\n" % (opts.input,))
-for f in french:
+for (i,f) in enumerate(french):
+  if i > 9:
+    break
   # The following code implements a monotone decoding
   # algorithm (one that doesn't permute the target phrases).
   # Hence all hypotheses in stacks[i] represent translations of 
@@ -110,36 +114,38 @@ for f in french:
             new_hypothesis = hypothesis(logprob, lm_state, h, phrase, (i, j))
             if lm_state not in stacks[j] or stacks[j][lm_state].logprob < logprob: # second case is recombination
               stacks[j][lm_state] = new_hypothesis
+  def extract_english(h): 
+    return "" if h.predecessor is None else "%s%s " % (extract_english(h.predecessor), h.phrase.english)
   winner = max(stacks[-1].itervalues(), key=lambda h: h.logprob)
   
   current = pharoahToGreedy(winner)
-  maxiters = 200
+  maxiters = 100
+  #print extract_english(winner)
   while (maxiters > 0):
     maxiters -= 1
-    s_current = score(f, current, lm, tm, 1, 1, 1)
+    s_current = score(f, current, lm, tm, 1, 1, 0)
+    #print s_current
     s = s_current
     neighbors = []
     neighbors += swap(current)
-    #neighbors += move(current)
+    #neighbors += move(current) #Causes alignment issues
     neighbors += mergeSentence(current, f, tm)
-    neighbors += splitSentence(current, f, tm)
-    #neighbors += randomShuffle(current, 20000)
+    #neighbors += splitSentence(current, f, tm)
+    neighbors += randomShuffle(current, 10000)
     #print len(neighbors)
     best = current
     for h in neighbors:
-      c = score(f,h,lm,tm,1,1,1)
-      #print c
-      if c > s:
+      c = score(f,h,lm,tm,1,1,0)
+      #print c - s
+      if c > s and c - s > 10e-10:
         s = c
         best = h
-        #print 'NewBest'
+        #print 'NewBest: ' +  extract_english_greedy(best)
     if s == s_current:
       break
     else:
       current = best
 
-  def extract_english(h): 
-    return "" if h.predecessor is None else "%s%s " % (extract_english(h.predecessor), h.phrase.english)
   #print extract_english(winner)
   print extract_english_greedy(current)
 

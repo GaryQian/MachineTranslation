@@ -8,6 +8,7 @@ from swap import swap
 from move import move
 from randomShuffle import randomShuffle
 import random
+import heapq
 
 
 def extract_english_greedy(current):
@@ -118,32 +119,41 @@ for (i,f) in enumerate(french):
   def extract_english(h): 
     return "" if h.predecessor is None else "%s%s " % (extract_english(h.predecessor), h.phrase.english)
   winner = max(stacks[-1].itervalues(), key=lambda h: h.logprob)
-  
-  current = pharoahToGreedy(winner)
-  maxiters = 100
+  winners = sorted(stacks[-1].itervalues(), key=lambda h: abs(h.logprob))
+  #print len(winners)
+  #print len(stacks[-1])
+  current = []
+  n = 10
+  for w in winners[:n]:
+    current.append((pharoahToGreedy(w), score(f,pharoahToGreedy(w),lm,tm,2,1,0)))
+  #print len(current)
+  maxiters = 7
   while (maxiters > 0):
+    current = heapq.nlargest(n, current, key= lambda x : x[1])
     maxiters -= 1
-    s_current = score(f, current, lm, tm, 2, 1, 0)
-    s = s_current
+    #s_current = score(f, current, lm, tm, 2, 1, 0)
+    #s = s_current
     neighbors = []
-    neighbors += swap(current)
-    neighbors += move(current)
-    neighbors += mergeSentence(current, f, tm)
-    neighbors += splitSentence(current, f, tm)
-    neighbors += replace(current, f, tm)
-    neighbors += randomShuffle(current, 10000)
-    best = current
+    for cur in current:
+      neighbors += swap(cur[0])
+      neighbors += move(cur[0])
+      neighbors += mergeSentence(cur[0], f, tm)
+      neighbors += splitSentence(cur[0], f, tm)
+      neighbors += replace(cur[0], f, tm)
+      neighbors += randomShuffle(cur[0], 5000)
+    #best = current
     for h in neighbors:
-      c = score(f,h,lm,tm,2,1,0)
-      if c > s and c - s > 10e-10:
-        s = c
-        best = h
-    if s == s_current:
-      break
-    else:
-      current = best
+      current.append((h, score(f,h,lm,tm,2,1,0)))
+      #c = score(f,h,lm,tm,2,1,0)
+      #if c > s and c - s > 10e-10:
+      #  s = c
+      #  best = h
+    #if s == s_current:
+    #  break
+    #else:
+    #  current = best
 
-  print extract_english_greedy(current)
+  print extract_english_greedy(heapq.nlargest(1, current, key= lambda x : x[1])[0][0])
 
   if opts.verbose:
     def extract_tm_logprob(h):
